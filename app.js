@@ -27,7 +27,9 @@ function getOrCreateUserId() {
 async function tagExternalUserId() {
   const userId = getOrCreateUserId();
   OneSignal.push(function () {
-    OneSignal.setExternalUserId(userId);
+    OneSignal.setExternalUserId(userId, function() {
+      console.log("🔗 ExternalUserId ถูกตั้งค่า:", userId);
+    });
   });
 }
 
@@ -60,7 +62,12 @@ function setStatus(text) {
 
 OneSignal.push(function () {
   OneSignal.isPushNotificationsEnabled(function (enabled) {
-    setStatus(enabled ? "เปิดใช้งานแล้ว" : "ยังไม่เปิดใช้งาน");
+    if (enabled) {
+      setStatus("เปิดใช้งานแล้ว");
+    } else {
+      setStatus("ยังไม่เปิดใช้งาน");
+      console.warn("❌ Push ยังไม่ได้เปิดใช้งาน");
+    }
   });
 });
 
@@ -70,7 +77,7 @@ enableBtn.addEventListener("click", async () => {
     await tagExternalUserId();
     setStatus("เปิดใช้งานแล้ว");
   } catch (e) {
-    console.error(e);
+    console.error("⚠️ เปิด Push ไม่สำเร็จ:", e);
     setStatus("อนุญาตไม่สำเร็จ/ถูกบล็อก");
   }
 });
@@ -148,7 +155,8 @@ form.addEventListener("submit", async (e) => {
       saveMsg.textContent = "บันทึกไม่สำเร็จ (เซิร์ฟเวอร์ไม่ตอบ ok)";
     }
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error fetch:", err);
     saveMsg.textContent = "บันทึกไม่สำเร็จ (เครือข่าย/CORS)";
   }
 });
+
