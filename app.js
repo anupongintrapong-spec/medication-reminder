@@ -1,5 +1,6 @@
 /* ===== CONFIG ===== */
 const ONESIGNAL_APP_ID = "66881c4f-6152-4f6a-8c99-ffc73b8e8978"; 
+// ใช้ Worker URL ตรง ๆ
 const APPS_SCRIPT_WEBAPP_URL = "https://project.anupongintrapong.workers.dev/";
 
 /* ===== OneSignal init ===== */
@@ -128,7 +129,7 @@ form.addEventListener("submit", async (e) => {
   });
 
   try {
-    const res = await fetch(PROXY_URL + APPS_SCRIPT_WEBAPP_URL, {
+    const res = await fetch(APPS_SCRIPT_WEBAPP_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ entries: payloads }),
