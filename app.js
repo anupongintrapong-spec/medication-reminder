@@ -1,6 +1,5 @@
 /* ===== CONFIG ===== */
 const ONESIGNAL_APP_ID = "66881c4f-6152-4f6a-8c99-ffc73b8e8978"; 
-const PROXY_URL = "https://cors-anywhere.herokuapp.com/"; 
 const APPS_SCRIPT_WEBAPP_URL = "https://project.anupongintrapong.workers.dev/";
 
 /* ===== OneSignal init ===== */
