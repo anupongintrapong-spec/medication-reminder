@@ -1,0 +1,9 @@
+{
+"name": "ตัวช่วยแจ้งเตือนการรับประทานยา",
+"short_name": "ยากิน",
+"start_url": "/",
+"display": "standalone",
+"background_color": "#ffffff",
+"theme_color": "#000000",
+"icons": []
+}
