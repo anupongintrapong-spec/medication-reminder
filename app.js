@@ -1,6 +1,5 @@
 /* ===== CONFIG ===== */
 const ONESIGNAL_APP_ID = "66881c4f-6152-4f6a-8c99-ffc73b8e8978"; 
-// ใช้ Worker URL ตรง ๆ
 const APPS_SCRIPT_WEBAPP_URL = "https://project.anupongintrapong.workers.dev/";
 
 /* ===== OneSignal init ===== */
@@ -27,8 +26,16 @@ function getOrCreateUserId() {
 async function tagExternalUserId() {
   const userId = getOrCreateUserId();
   OneSignal.push(function () {
-    OneSignal.setExternalUserId(userId, function() {
-      console.log("🔗 ExternalUserId ถูกตั้งค่า:", userId);
+    OneSignal.setExternalUserId(userId);
+    console.log("🔗 ExternalUserId ถูกตั้งค่า:", userId);
+  });
+}
+
+function resetExternalUserId() {
+  OneSignal.push(function () {
+    OneSignal.removeExternalUserId(function() {
+      console.log("🧹 ExternalUserId ถูกลบออกแล้ว");
+      alert("ExternalUserId ถูกรีเซ็ตเรียบร้อยแล้ว");
     });
   });
 }
@@ -50,6 +57,7 @@ function localDatetimeToISO(datetimeLocal) {
 
 /* ===== UI elements ===== */
 const enableBtn = document.getElementById("enablePushBtn");
+const resetBtn = document.getElementById("resetPushBtn"); // เพิ่มปุ่ม reset
 const statusSpan = document.getElementById("notifStatus");
 const saveMsg = document.getElementById("saveMsg");
 const timesWrap = document.getElementById("timesWrap");
@@ -81,6 +89,8 @@ enableBtn.addEventListener("click", async () => {
     setStatus("อนุญาตไม่สำเร็จ/ถูกบล็อก");
   }
 });
+
+resetBtn.addEventListener("click", resetExternalUserId);
 
 /* ===== Render time row ===== */
 function renderTimeRow(defaultMinutesFromNow = 1) {
@@ -159,4 +169,3 @@ form.addEventListener("submit", async (e) => {
     saveMsg.textContent = "บันทึกไม่สำเร็จ (เครือข่าย/CORS)";
   }
 });
-
