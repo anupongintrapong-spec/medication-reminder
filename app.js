@@ -1,5 +1,5 @@
 /* ===== CONFIG ===== */
-const APPS_SCRIPT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw6xchSw5_S_Y3pIVpZKdwB7Cyw37SGgB5n5XF3n0lqyJWYsPrYr3Z-opK37jElIDoU/exec";
+const APPS_SCRIPT_WEBAPP_URL = "https://medication-reminder.anupongintrapong.workers.dev/";
 
 /* ===== Helper ===== */
 function toLocalDatetimeValue(d) {
