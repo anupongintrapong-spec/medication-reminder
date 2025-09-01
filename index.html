@@ -1,82 +1,52 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>แจ้งเตือนการรับประทานยา</title>
-<link rel="manifest" href="/manifest.json" />
-<script src="https://cdn.tailwindcss.com"></script>
-<!-- OneSignal SDK -->
-<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
-<style>
-body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>แจ้งเตือนการรับประทานยา</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+    }
+  </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-<div class="max-w-xl mx-auto p-6">
-<h1 class="text-2xl font-bold mb-2">ตัวช่วยแจ้งเตือนการรับประทานยา</h1>
-<p class="text-gray-600 mb-6">บันทึกตารางยาไปยัง Google Sheets และตั้งแจ้งเตือนแบบ Push Notification</p>
+  <div class="max-w-xl mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-2">ตัวช่วยแจ้งเตือนการรับประทานยา</h1>
+    <p class="text-gray-600 mb-6">
+      กรอกข้อมูลยาและเวลาที่ต้องการ ระบบจะบันทึกลง Google Sheets และส่งแจ้งเตือนไปทาง LINE
+    </p>
 
+    <!-- Form -->
+    <form id="medForm" class="space-y-4 p-4 bg-white rounded-xl shadow">
+      <div>
+        <label class="block text-sm font-medium mb-1">ชื่อยา</label>
+        <input id="drugName" type="text" required placeholder="เช่น Metformin" class="w-full border rounded-lg px-3 py-2" />
+      </div>
 
-<!-- Permission / status -->
-<div class="mb-4 p-4 rounded-xl bg-white shadow">
-  <div class="flex items-start justify-between gap-4">
-    <div>
-      <p class="font-medium">
-        สถานะการแจ้งเตือน: 
-        <span id="notifStatus" class="font-semibold">กำลังตรวจสอบ…</span>
-      </p>
-      <p class="text-sm text-gray-500">
-        รองรับ Chrome/Edge/Firefox บน Android และเดสก์ท็อป (iOS Safari มีข้อจำกัด)
-      </p>
-    </div>
-    <div class="flex gap-2">
-      <button id="enablePushBtn" class="px-4 py-2 rounded-lg bg-black text-white disabled:opacity-40">
-        เปิดการแจ้งเตือน
-      </button>
-      <button id="resetPushBtn" class="px-4 py-2 rounded-lg bg-gray-600 text-white">
-        รีเซ็ตแจ้งเตือน
-      </button>
+      <div>
+        <label class="block text-sm font-medium mb-1">ขนาดยา / วิธีใช้ (ตัวเลือก)</label>
+        <input id="dosage" type="text" placeholder="เช่น 500 mg หลังอาหารเช้า" class="w-full border rounded-lg px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-2">เวลาที่ต้องการแจ้งเตือน</label>
+        <div id="timesWrap" class="space-y-2"></div>
+        <button id="addTimeBtn" type="button" class="mt-2 text-sm underline">+ เพิ่มเวลา</button>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button type="submit" class="px-4 py-2 rounded-lg bg-green-600 text-white">บันทึกตารางยา</button>
+        <span id="saveMsg" class="text-sm text-gray-600"></span>
+      </div>
+    </form>
+
+    <div class="mt-6 text-sm text-gray-500">
+      <p>ระบบนี้ใช้ Google Apps Script ในการบันทึกข้อมูลและส่งแจ้งเตือนผ่าน LINE</p>
     </div>
   </div>
-</div>
 
-
-<!-- Form -->
-<form id="medForm" class="space-y-4 p-4 bg-white rounded-xl shadow">
-<div>
-<label class="block text-sm font-medium mb-1">ชื่อยา</label>
-<input id="drugName" type="text" required placeholder="เช่น Metformin" class="w-full border rounded-lg px-3 py-2" />
-</div>
-
-
-<div>
-<label class="block text-sm font-medium mb-1">ขนาดยา / วิธีใช้ (ตัวเลือก)</label>
-<input id="dosage" type="text" placeholder="เช่น 500 mg หลังอาหารเช้า" class="w-full border rounded-lg px-3 py-2" />
-</div>
-
-
-<div>
-<label class="block text-sm font-medium mb-2">เวลาที่ต้องการแจ้งเตือน</label>
-<div id="timesWrap" class="space-y-2"></div>
-<button id="addTimeBtn" type="button" class="mt-2 text-sm underline">+ เพิ่มเวลา</button>
-</div>
-
-
-<div class="flex items-center gap-3">
-<button type="submit" class="px-4 py-2 rounded-lg bg-green-600 text-white">บันทึกตารางยา</button>
-<span id="saveMsg" class="text-sm text-gray-600"></span>
-</div>
-</form>
-
-
-<div class="mt-6 text-sm text-gray-500">
-<p>ระบบนี้ใช้ OneSignal สำหรับ Push และ Google Apps Script สำหรับบันทึกข้อมูล/ตั้งแจ้งเตือนล่วงหน้า</p>
-<p>ต้องเปิดผ่าน HTTPS หรือ <code>localhost</code> เพื่อให้ Push ทำงาน</p>
-</div>
-</div>
-
-
-<script defer src="/app.js"></script>
+  <script defer src="/app.js"></script>
 </body>
 </html>
