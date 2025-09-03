@@ -8,60 +8,35 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
   <div class="w-full max-w-sm bg-white p-6 rounded-xl shadow">
-    <h1 class="text-2xl font-bold mb-2 text-center">เข้าสู่ระบบ</h1>
-    <p class="text-gray-600 mb-6 text-center">
-      กรุณาเข้าสู่ระบบก่อนใช้งานระบบแจ้งเตือนการรับประทานยา
-    </p>
-
-    <!-- Login Form -->
+    <h1 class="text-2xl font-bold mb-4 text-center">เข้าสู่ระบบ</h1>
     <form id="loginForm" class="space-y-4">
       <div>
-        <label class="block text-sm font-medium mb-1">อีเมล</label>
-        <input id="loginEmail" type="email" required placeholder="yourname@example.com"
+        <label class="block text-sm mb-1">อีเมล</label>
+        <input id="email" type="email" required placeholder="you@example.com"
           class="w-full border rounded-lg px-3 py-2" />
       </div>
-
       <div>
-        <label class="block text-sm font-medium mb-1">รหัสผ่าน</label>
-        <input id="loginPassword" type="password" required placeholder="••••••••"
+        <label class="block text-sm mb-1">รหัสผ่าน</label>
+        <input id="password" type="password" required placeholder="••••••••"
           class="w-full border rounded-lg px-3 py-2" />
       </div>
-
-      <button type="submit"
-        class="w-full py-2 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700">
-        เข้าสู่ระบบ
-      </button>
+      <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg">เข้าสู่ระบบ</button>
     </form>
-
-    <p id="loginMsg" class="mt-4 text-sm text-center text-gray-600"></p>
-
-    <p class="mt-6 text-xs text-center text-gray-400">
-      โครงงาน: ระบบแจ้งเตือนการรับประทานยา
-    </p>
   </div>
 
   <script>
-    const form = document.getElementById("loginForm");
-    const loginMsg = document.getElementById("loginMsg");
-
-    form.addEventListener("submit", async (e) => {
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
       e.preventDefault();
-      loginMsg.textContent = "กำลังตรวจสอบ...";
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPassword").value.trim();
-
-      // 📌 ตัวอย่างตรวจสอบง่ายๆ (ในโครงงานจริง ควรตรวจสอบจาก Database หรือ Google Sheet)
+      // สมมติ login สำเร็จ (จริงๆ ควรตรวจสอบกับ server)
       if (email && password) {
-        // เก็บ session ไว้ใน localStorage
         localStorage.setItem("userEmail", email);
-        loginMsg.textContent = "✅ เข้าสู่ระบบสำเร็จ กำลังพาไปยังหน้าหลัก...";
-
-        setTimeout(() => {
-          window.location.href = "index.html"; // ไปหน้าเว็บหลัก (index.html)
-        }, 1500);
+        alert("✅ เข้าสู่ระบบสำเร็จ");
+        window.location.href = "index.html";
       } else {
-        loginMsg.textContent = "❌ กรุณากรอกอีเมลและรหัสผ่าน";
+        alert("❌ กรุณากรอกข้อมูลให้ครบ");
       }
     });
   </script>
