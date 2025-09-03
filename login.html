@@ -1,1 +1,69 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>เข้าสู่ระบบ - ระบบแจ้งเตือนการรับประทานยา</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-sm bg-white p-6 rounded-xl shadow">
+    <h1 class="text-2xl font-bold mb-2 text-center">เข้าสู่ระบบ</h1>
+    <p class="text-gray-600 mb-6 text-center">
+      กรุณาเข้าสู่ระบบก่อนใช้งานระบบแจ้งเตือนการรับประทานยา
+    </p>
 
+    <!-- Login Form -->
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium mb-1">อีเมล</label>
+        <input id="loginEmail" type="email" required placeholder="yourname@example.com"
+          class="w-full border rounded-lg px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">รหัสผ่าน</label>
+        <input id="loginPassword" type="password" required placeholder="••••••••"
+          class="w-full border rounded-lg px-3 py-2" />
+      </div>
+
+      <button type="submit"
+        class="w-full py-2 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700">
+        เข้าสู่ระบบ
+      </button>
+    </form>
+
+    <p id="loginMsg" class="mt-4 text-sm text-center text-gray-600"></p>
+
+    <p class="mt-6 text-xs text-center text-gray-400">
+      โครงงาน: ระบบแจ้งเตือนการรับประทานยา
+    </p>
+  </div>
+
+  <script>
+    const form = document.getElementById("loginForm");
+    const loginMsg = document.getElementById("loginMsg");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      loginMsg.textContent = "กำลังตรวจสอบ...";
+
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+
+      // 📌 ตัวอย่างตรวจสอบง่ายๆ (ในโครงงานจริง ควรตรวจสอบจาก Database หรือ Google Sheet)
+      if (email && password) {
+        // เก็บ session ไว้ใน localStorage
+        localStorage.setItem("userEmail", email);
+        loginMsg.textContent = "✅ เข้าสู่ระบบสำเร็จ กำลังพาไปยังหน้าหลัก...";
+
+        setTimeout(() => {
+          window.location.href = "index.html"; // ไปหน้าเว็บหลัก (index.html)
+        }, 1500);
+      } else {
+        loginMsg.textContent = "❌ กรุณากรอกอีเมลและรหัสผ่าน";
+      }
+    });
+  </script>
+</body>
+</html>
