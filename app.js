@@ -58,6 +58,7 @@ form.addEventListener("submit", async (e) => {
 
   const drugName = document.getElementById("drugName").value.trim();
   const dosage = document.getElementById("dosage").value.trim();
+  const email = document.getElementById("email").value.trim(); // 🔹 ดึงอีเมล
 
   const times = Array.from(timesWrap.querySelectorAll('input[type="datetime-local"]'))
     .map((el) => el.value)
@@ -72,7 +73,7 @@ form.addEventListener("submit", async (e) => {
     const iso = localDatetimeToISO(t);
     const title = "ถึงเวลาทานยาแล้ว";
     const body = dosage ? `${drugName} — ${dosage}` : drugName;
-    return { drugName, dosage, timeISO: iso, title, body };
+    return { drugName, dosage, timeISO: iso, title, body, email }; // 🔹 แนบ email ไปด้วย
   });
 
   try {
@@ -86,7 +87,7 @@ form.addEventListener("submit", async (e) => {
 
     const data = await res.json();
     if (data?.ok) {
-      saveMsg.textContent = `✅ บันทึกสำเร็จ ${payloads.length} รายการ (LINE แจ้งเตือนถูกตั้งเวลาแล้ว)`;
+      saveMsg.textContent = `✅ บันทึกสำเร็จ ${payloads.length} รายการ (แจ้งเตือนถูกตั้งเวลาแล้ว)`;
       form.reset();
       timesWrap.innerHTML = "";
       renderTimeRow(60);
