@@ -1,1 +1,76 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ประวัติการแจ้งเตือนยา</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div class="max-w-3xl mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-4">📋 ประวัติการแจ้งเตือนยา</h1>
+    <p id="userEmail" class="text-gray-600 mb-4"></p>
+
+    <table class="w-full border-collapse border border-gray-300 text-sm bg-white">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="border px-3 py-2">ชื่อยา</th>
+          <th class="border px-3 py-2">ขนาดยา</th>
+          <th class="border px-3 py-2">เวลาแจ้งเตือน</th>
+          <th class="border px-3 py-2">สถานะ</th>
+        </tr>
+      </thead>
+      <tbody id="historyTable">
+        <tr><td colspan="4" class="text-center py-3">⏳ กำลังโหลด...</td></tr>
+      </tbody>
+    </table>
+
+    <div class="mt-4 flex gap-3">
+      <button id="refreshBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg">รีเฟรช</button>
+      <a href="index.html" class="px-4 py-2 bg-green-600 text-white rounded-lg">กลับไปตั้งค่า</a>
+    </div>
+  </div>
+
+  <script>
+    const APPS_SCRIPT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx0-07uVHnzxsJ9n-c3S5soZfhy4etGlhXLJLfwTu7iHYviABUWIR5tM6fwH0t4Sm4/exec";
+
+    const email = localStorage.getItem("userEmail");
+    if (!email) {
+      alert("❌ กรุณาเข้าสู่ระบบก่อน");
+      window.location.href = "login.html";
+    }
+
+    document.getElementById("userEmail").textContent = "👤 กำลังดูข้อมูลของ: " + email;
+
+    async function loadHistory() {
+      const table = document.getElementById("historyTable");
+      table.innerHTML = "<tr><td colspan='4' class='text-center py-3'>⏳ กำลังโหลด...</td></tr>";
+
+      try {
+        const res = await fetch(APPS_SCRIPT_WEBAPP_URL + "?email=" + encodeURIComponent(email));
+        const data = await res.json();
+
+        if (!data.ok || !data.records.length) {
+          table.innerHTML = "<tr><td colspan='4' class='text-center py-3 text-gray-500'>ไม่มีข้อมูล</td></tr>";
+          return;
+        }
+
+        table.innerHTML = data.records.map(r => `
+          <tr>
+            <td class="border px-3 py-2">${r.drugName}</td>
+            <td class="border px-3 py-2">${r.dosage}</td>
+            <td class="border px-3 py-2">${r.timeISO}</td>
+            <td class="border px-3 py-2">${r.status}</td>
+          </tr>
+        `).join("");
+      } catch (err) {
+        table.innerHTML = "<tr><td colspan='4' class='text-center py-3 text-red-600'>โหลดข้อมูลล้มเหลว</td></tr>";
+      }
+    }
+
+    document.getElementById("refreshBtn").addEventListener("click", loadHistory);
+    loadHistory();
+  </script>
+</body>
+</html>
 
