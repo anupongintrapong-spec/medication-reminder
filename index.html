@@ -15,41 +15,49 @@
   <div class="max-w-xl mx-auto p-6">
     <h1 class="text-2xl font-bold mb-2">ตัวช่วยแจ้งเตือนการรับประทานยา</h1>
     <p class="text-gray-600 mb-6">
-      กรอกข้อมูลยาและเวลาที่ต้องการ ระบบจะบันทึกลง Google Sheets และส่งแจ้งเตือนไปทางอีเมล
+      กรอกข้อมูลยา เวลาที่ต้องการ ระบบจะบันทึกลง Google Sheets และส่งแจ้งเตือนทางอีเมล
     </p>
 
     <!-- Form -->
     <form id="medForm" class="space-y-4 p-4 bg-white rounded-xl shadow">
+      <!-- ชื่อยา -->
       <div>
-        <label class="block text-sm font-medium mb-1">ชื่อยา</label>
-        <input id="drugName" type="text" required placeholder="เช่น Metformin" class="w-full border rounded-lg px-3 py-2" />
+        <label for="drugName" class="block text-sm font-medium mb-1">ชื่อยา</label>
+        <input id="drugName" type="text" required placeholder="เช่น Metformin"
+          class="w-full border rounded-lg px-3 py-2" />
       </div>
 
+      <!-- ขนาดยา -->
       <div>
-        <label class="block text-sm font-medium mb-1">ขนาดยา / วิธีใช้ (ตัวเลือก)</label>
-        <input id="dosage" type="text" placeholder="เช่น 500 mg หลังอาหารเช้า" class="w-full border rounded-lg px-3 py-2" />
+        <label for="dosage" class="block text-sm font-medium mb-1">ขนาดยา / วิธีใช้ (ไม่บังคับ)</label>
+        <input id="dosage" type="text" placeholder="เช่น 500 mg หลังอาหารเช้า"
+          class="w-full border rounded-lg px-3 py-2" />
       </div>
 
+      <!-- เวลาที่ต้องการแจ้งเตือน -->
       <div>
         <label class="block text-sm font-medium mb-2">เวลาที่ต้องการแจ้งเตือน</label>
         <div id="timesWrap" class="space-y-2"></div>
-        <button id="addTimeBtn" type="button" class="mt-2 text-sm underline">+ เพิ่มเวลา</button>
+        <button id="addTimeBtn" type="button" class="mt-2 text-sm underline text-blue-600">+ เพิ่มเวลา</button>
       </div>
 
-      <!-- 🔹 ช่องกรอกอีเมล -->
+      <!-- อีเมล -->
       <div>
-        <label class="block text-sm font-medium mb-1">อีเมลผู้รับการแจ้งเตือน</label>
-        <input id="email" type="email" required placeholder="yourname@example.com" class="w-full border rounded-lg px-3 py-2" />
+        <label for="email" class="block text-sm font-medium mb-1">อีเมลผู้รับการแจ้งเตือน</label>
+        <input id="email" type="email" required placeholder="yourname@example.com"
+          class="w-full border rounded-lg px-3 py-2" />
       </div>
 
+      <!-- ปุ่ม -->
       <div class="flex items-center gap-3">
-        <button type="submit" class="px-4 py-2 rounded-lg bg-green-600 text-white">บันทึกตารางยา</button>
+        <button type="submit"
+          class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700">บันทึกตารางยา</button>
         <span id="saveMsg" class="text-sm text-gray-600"></span>
       </div>
     </form>
 
     <div class="mt-6 text-sm text-gray-500">
-      <p>ระบบนี้ใช้ Google Apps Script ในการบันทึกข้อมูลและส่งแจ้งเตือนผ่านอีเมล</p>
+      <p>⚡ ระบบนี้ใช้ Google Apps Script ในการบันทึกข้อมูลและส่งการแจ้งเตือนทางอีเมล</p>
     </div>
   </div>
 
