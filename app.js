@@ -4,25 +4,18 @@ const APPS_SCRIPT_WEBAPP_URL = "https://medication-reminder.anupongintrapong.wor
 /* ===== Helper ===== */
 function toLocalDatetimeValue(d) {
   const pad = (n) => String(n).padStart(2, "0");
-  const yyyy = d.getFullYear();
-  const mm = pad(d.getMonth() + 1);
-  const dd = pad(d.getDate());
-  const hh = pad(d.getHours());
-  const mi = pad(d.getMinutes());
-  return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function localDatetimeToISO(datetimeLocal) {
-  const d = new Date(datetimeLocal);
-  return d.toISOString();
+  return new Date(datetimeLocal).toISOString();
 }
 
-/* ===== UI elements ===== */
+/* ===== UI ===== */
 const saveMsg = document.getElementById("saveMsg");
 const timesWrap = document.getElementById("timesWrap");
 const addTimeBtn = document.getElementById("addTimeBtn");
 
-/* ===== Render time row ===== */
 function renderTimeRow(defaultMinutesFromNow = 1) {
   const wrap = document.createElement("div");
   wrap.className = "flex items-center gap-2";
@@ -46,19 +39,18 @@ function renderTimeRow(defaultMinutesFromNow = 1) {
   timesWrap.appendChild(wrap);
 }
 
-// เริ่มต้นด้วยแถวเวลาเริ่มต้น
 renderTimeRow(1);
 addTimeBtn.addEventListener("click", () => renderTimeRow(60));
 
-/* ===== Form submit ===== */
-const form = document.getElementById("medForm");
-form.addEventListener("submit", async (e) => {
+/* ===== Submit ===== */
+document.getElementById("medForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   saveMsg.textContent = "กำลังบันทึก…";
 
   const drugName = document.getElementById("drugName").value.trim();
   const dosage = document.getElementById("dosage").value.trim();
-  const email = document.getElementById("email").value.trim(); // 🔹 ดึงอีเมล
+  const email = document.getElementById("email").value.trim();
+  const days = parseInt(document.getElementById("days").value, 10);
 
   const times = Array.from(timesWrap.querySelectorAll('input[type="datetime-local"]'))
     .map((el) => el.value)
@@ -69,11 +61,21 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  const payloads = times.map((t) => {
-    const iso = localDatetimeToISO(t);
-    const title = "ถึงเวลาทานยาแล้ว";
-    const body = dosage ? `${drugName} — ${dosage}` : drugName;
-    return { drugName, dosage, timeISO: iso, title, body, email }; // 🔹 แนบ email ไปด้วย
+  const payloads = [];
+  times.forEach((t) => {
+    const baseDate = new Date(t);
+    for (let i = 0; i < days; i++) {
+      const nextDate = new Date(baseDate);
+      nextDate.setDate(nextDate.getDate() + i);
+      payloads.push({
+        drugName,
+        dosage,
+        timeISO: nextDate.toISOString(),
+        title: "ถึงเวลาทานยาแล้ว",
+        body: dosage ? `${drugName} — ${dosage}` : drugName,
+        email,
+      });
+    }
   });
 
   try {
@@ -84,18 +86,18 @@ form.addEventListener("submit", async (e) => {
     });
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
     const data = await res.json();
+
     if (data?.ok) {
       saveMsg.textContent = `✅ บันทึกสำเร็จ ${payloads.length} รายการ (แจ้งเตือนถูกตั้งเวลาแล้ว)`;
-      form.reset();
+      e.target.reset();
       timesWrap.innerHTML = "";
       renderTimeRow(60);
     } else {
-      saveMsg.textContent = "❌ บันทึกไม่สำเร็จ (เซิร์ฟเวอร์ไม่ตอบ ok)";
+      saveMsg.textContent = "❌ บันทึกไม่สำเร็จ (server error)";
     }
   } catch (err) {
-    console.error("❌ Error fetch:", err);
-    saveMsg.textContent = "❌ บันทึกไม่สำเร็จ (เครือข่าย/CORS)";
+    console.error(err);
+    saveMsg.textContent = "❌ บันทึกไม่สำเร็จ (network error)";
   }
 });
