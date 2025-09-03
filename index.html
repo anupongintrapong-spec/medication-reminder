@@ -5,62 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>แจ้งเตือนการรับประทานยา</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
-    }
-  </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
   <div class="max-w-xl mx-auto p-6">
     <h1 class="text-2xl font-bold mb-2">ตัวช่วยแจ้งเตือนการรับประทานยา</h1>
     <p class="text-gray-600 mb-6">
-      กรอกข้อมูลยา เวลาที่ต้องการ ระบบจะบันทึกลง Google Sheets และส่งแจ้งเตือนทางอีเมล
+      กรอกข้อมูลยา เวลาที่ต้องการ และจำนวนวันที่ต้องการให้แจ้งเตือน ระบบจะส่งอีเมลให้ตามเวลาที่กำหนด
     </p>
 
     <!-- Form -->
     <form id="medForm" class="space-y-4 p-4 bg-white rounded-xl shadow">
-      <!-- ชื่อยา -->
       <div>
-        <label for="drugName" class="block text-sm font-medium mb-1">ชื่อยา</label>
-        <input id="drugName" type="text" required placeholder="เช่น Metformin"
-          class="w-full border rounded-lg px-3 py-2" />
+        <label class="block text-sm font-medium mb-1">ชื่อยา</label>
+        <input id="drugName" type="text" required placeholder="เช่น Metformin" class="w-full border rounded-lg px-3 py-2" />
       </div>
 
-      <!-- ขนาดยา -->
       <div>
-        <label for="dosage" class="block text-sm font-medium mb-1">ขนาดยา / วิธีใช้ (ไม่บังคับ)</label>
-        <input id="dosage" type="text" placeholder="เช่น 500 mg หลังอาหารเช้า"
-          class="w-full border rounded-lg px-3 py-2" />
+        <label class="block text-sm font-medium mb-1">ขนาดยา / วิธีใช้ (ตัวเลือก)</label>
+        <input id="dosage" type="text" placeholder="เช่น 500 mg หลังอาหารเช้า" class="w-full border rounded-lg px-3 py-2" />
       </div>
 
-      <!-- เวลาที่ต้องการแจ้งเตือน -->
       <div>
         <label class="block text-sm font-medium mb-2">เวลาที่ต้องการแจ้งเตือน</label>
         <div id="timesWrap" class="space-y-2"></div>
-        <button id="addTimeBtn" type="button" class="mt-2 text-sm underline text-blue-600">+ เพิ่มเวลา</button>
+        <button id="addTimeBtn" type="button" class="mt-2 text-sm underline">+ เพิ่มเวลา</button>
       </div>
 
-      <!-- อีเมล -->
       <div>
-        <label for="email" class="block text-sm font-medium mb-1">อีเมลผู้รับการแจ้งเตือน</label>
-        <input id="email" type="email" required placeholder="yourname@example.com"
-          class="w-full border rounded-lg px-3 py-2" />
+        <label class="block text-sm font-medium mb-1">จำนวนวัน</label>
+        <input id="days" type="number" min="1" value="1" required class="w-full border rounded-lg px-3 py-2" />
+        <p class="text-xs text-gray-500">เช่น 7 หมายถึงให้แจ้งเตือนซ้ำทุกวันเป็นเวลา 7 วัน</p>
       </div>
 
-      <!-- ปุ่ม -->
+      <div>
+        <label class="block text-sm font-medium mb-1">อีเมลผู้รับการแจ้งเตือน</label>
+        <input id="email" type="email" required placeholder="yourname@example.com" class="w-full border rounded-lg px-3 py-2" />
+      </div>
+
       <div class="flex items-center gap-3">
-        <button type="submit"
-          class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700">บันทึกตารางยา</button>
+        <button type="submit" class="px-4 py-2 rounded-lg bg-green-600 text-white">บันทึกตารางยา</button>
         <span id="saveMsg" class="text-sm text-gray-600"></span>
       </div>
     </form>
-
-    <div class="mt-6 text-sm text-gray-500">
-      <p>⚡ ระบบนี้ใช้ Google Apps Script ในการบันทึกข้อมูลและส่งการแจ้งเตือนทางอีเมล</p>
-    </div>
   </div>
 
-  <script defer src="/app.js"></script>
+  <script defer src="app.js"></script>
 </body>
 </html>
