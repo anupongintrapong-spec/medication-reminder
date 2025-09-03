@@ -1,5 +1,5 @@
 /* ===== CONFIG ===== */
-const APPS_SCRIPT_WEBAPP_URL = "https://medication-reminder.anupongintrapong.workers.dev/";
+const APPS_SCRIPT_WEBAPP_URL = "https://medication-reminder.anupongintrapong.workers.dev/form";
 
 /* ===== Helper ===== */
 function toLocalDatetimeValue(d) {
