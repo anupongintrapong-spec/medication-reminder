@@ -5,50 +5,224 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>แจ้งเตือนการรับประทานยา</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* พื้นหลังไล่สี + เกรนบาง ๆ */
+    .bg-hero {
+      background: radial-gradient(1200px 600px at 20% -20%, rgba(99,102,241,.25), transparent 60%),
+                  radial-gradient(1000px 500px at 110% 10%, rgba(16,185,129,.25), transparent 60%),
+                  linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+    }
+    .glass {
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,.75);
+    }
+    /* แอนิเมชันปุ่มโหลด */
+    .loader {
+      border: 2px solid rgb(255 255 255 / .3);
+      border-top-color: white;
+      border-radius: 9999px;
+      width: 1rem; height: 1rem;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg) } }
+  </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-  <div class="max-w-xl mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-2">ตัวช่วยแจ้งเตือนการรับประทานยา</h1>
-    <p class="text-gray-600 mb-6">
-      กรอกข้อมูลยา เวลาที่ต้องการ และจำนวนวันที่ต้องการให้แจ้งเตือน ระบบจะส่งอีเมลให้ตามเวลาที่กำหนด
-    </p>
-
-    <!-- Form -->
-    <form id="medForm" class="space-y-4 p-4 bg-white rounded-xl shadow">
-      <div>
-        <label class="block text-sm font-medium mb-1">ชื่อยา</label>
-        <input id="drugName" type="text" required placeholder="เช่น Metformin" class="w-full border rounded-lg px-3 py-2" />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">ขนาดยา / วิธีใช้ (ตัวเลือก)</label>
-        <input id="dosage" type="text" placeholder="เช่น 500 mg หลังอาหารเช้า" class="w-full border rounded-lg px-3 py-2" />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-2">เวลาที่ต้องการแจ้งเตือน</label>
-        <div id="timesWrap" class="space-y-2"></div>
-        <button id="addTimeBtn" type="button" class="mt-2 text-sm underline">+ เพิ่มเวลา</button>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">จำนวนวัน</label>
-        <input id="days" type="number" min="1" value="1" required class="w-full border rounded-lg px-3 py-2" />
-        <p class="text-xs text-gray-500">เช่น 7 หมายถึงให้แจ้งเตือนซ้ำทุกวันเป็นเวลา 7 วัน</p>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">อีเมลผู้รับการแจ้งเตือน</label>
-        <input id="email" type="email" required placeholder="yourname@example.com" class="w-full border rounded-lg px-3 py-2" />
-      </div>
-
+<body class="min-h-screen bg-hero">
+  <!-- Top bar -->
+  <header class="sticky top-0 z-10 backdrop-blur-md bg-white/60 border-b">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <button type="submit" class="px-4 py-2 rounded-lg bg-green-600 text-white">บันทึกตารางยา</button>
-        <span id="saveMsg" class="text-sm text-gray-600"></span>
+        <div class="w-9 h-9 rounded-xl grid place-items-center bg-indigo-600 text-white">💊</div>
+        <span class="font-semibold">Medication Reminder</span>
       </div>
-    </form>
+      <div class="text-sm text-gray-500">เวอร์ชันทดลองใช้งาน</div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="max-w-5xl mx-auto px-4">
+    <div class="text-center mt-10 mb-8">
+      <h1 class="text-3xl font-extrabold tracking-tight text-gray-900">
+        ตัวช่วยแจ้งเตือนการรับประทานยา
+      </h1>
+      <p class="text-gray-600 mt-2">
+        กรอกข้อมูลยา เวลาที่ต้องการ และจำนวนวันที่ให้แจ้งเตือน ระบบจะส่งอีเมลตามเวลาที่กำหนด
+      </p>
+    </div>
+
+    <!-- Stepper -->
+    <ol class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-6">
+      <li class="flex items-center gap-3 p-3 rounded-xl bg-white border">
+        <span class="w-7 h-7 rounded-full grid place-items-center bg-indigo-600 text-white text-sm">1</span>
+        <div>
+          <p class="font-medium">รายละเอียดยา</p>
+          <p class="text-xs text-gray-500">ชื่อ & ขนาดยา</p>
+        </div>
+      </li>
+      <li class="flex items-center gap-3 p-3 rounded-xl bg-white border">
+        <span class="w-7 h-7 rounded-full grid place-items-center bg-emerald-600 text-white text-sm">2</span>
+        <div>
+          <p class="font-medium">กำหนดเวลา</p>
+          <p class="text-xs text-gray-500">เพิ่มได้หลายเวลา</p>
+        </div>
+      </li>
+      <li class="flex items-center gap-3 p-3 rounded-xl bg-white border">
+        <span class="w-7 h-7 rounded-full grid place-items-center bg-slate-700 text-white text-sm">3</span>
+        <div>
+          <p class="font-medium">ตั้งจำนวนวัน & อีเมล</p>
+          <p class="text-xs text-gray-500">รับแจ้งเตือนอัตโนมัติ</p>
+        </div>
+      </li>
+    </ol>
+
+    <!-- Card -->
+    <div class="glass rounded-2xl shadow-xl border p-6 md:p-7">
+      <form id="medForm" class="space-y-5">
+        <!-- ชื่อยา -->
+        <div>
+          <label class="block text-sm font-medium mb-1">ชื่อยา</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">💊</span>
+            <input id="drugName" type="text" required placeholder="เช่น Metformin"
+              class="w-full border rounded-xl pl-9 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+        </div>
+
+        <!-- ขนาดยา/วิธีใช้ -->
+        <div>
+          <label class="block text-sm font-medium mb-1">ขนาดยา / วิธีใช้ (ตัวเลือก)</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">📝</span>
+            <input id="dosage" type="text" placeholder="เช่น 500 mg หลังอาหารเช้า"
+              class="w-full border rounded-xl pl-9 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+        </div>
+
+        <!-- เวลาที่ต้องการแจ้งเตือน -->
+        <div>
+          <label class="block text-sm font-medium mb-2">เวลาที่ต้องการแจ้งเตือน</label>
+          <div id="timesWrap" class="space-y-2"></div>
+
+          <button id="addTimeBtn" type="button"
+            class="inline-flex items-center gap-2 mt-2 text-sm px-3 py-1.5 rounded-full border bg-white hover:bg-gray-50">
+            <span class="text-indigo-600">＋</span> เพิ่มเวลา
+          </button>
+        </div>
+
+        <!-- จำนวนวัน -->
+        <div>
+          <label class="block text-sm font-medium mb-1">จำนวนวัน</label>
+          <div class="flex items-center gap-2">
+            <button type="button" id="decDays"
+              class="w-10 h-10 rounded-lg border grid place-items-center hover:bg-gray-50">–</button>
+            <input id="days" type="number" min="1" value="1" required
+              class="w-24 text-center border rounded-lg py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <button type="button" id="incDays"
+              class="w-10 h-10 rounded-lg border grid place-items-center hover:bg-gray-50">+</button>
+          </div>
+          <p class="text-xs text-gray-500 mt-1">เช่น 7 หมายถึงให้แจ้งเตือนซ้ำทุกวันเป็นเวลา 7 วัน</p>
+        </div>
+
+        <!-- อีเมล -->
+        <div>
+          <label class="block text-sm font-medium mb-1">อีเมลผู้รับการแจ้งเตือน</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">✉️</span>
+            <input id="email" type="email" required placeholder="yourname@example.com"
+              class="w-full border rounded-xl pl-9 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+        </div>
+
+        <!-- ปุ่มบันทึก + สถานะ -->
+        <div class="flex items-center gap-3 pt-2">
+          <button id="submitBtn" type="submit"
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200">
+            <span>บันทึกตารางยา</span>
+            <span id="loadingDot" class="hidden loader"></span>
+          </button>
+
+          <!-- เว้นไว้ให้ app.js เขียนข้อความเดิมได้ -->
+          <span id="saveMsg" class="text-sm text-gray-600"></span>
+        </div>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-gray-500 mt-8 pb-10">
+      ทำงานด้วย Google Apps Script & Gmail • UI by TailwindCSS
+    </footer>
+  </section>
+
+  <!-- Toast -->
+  <div id="toast"
+       class="fixed left-1/2 -translate-x-1/2 bottom-6 hidden px-4 py-2 rounded-lg shadow-lg text-sm text-white bg-emerald-600">
+    บันทึกสำเร็จ!
   </div>
 
-  <script defer src="app.js"></script>
+  <script>
+    // helper เพิ่ม-ลดวัน
+    const days = document.getElementById('days');
+    document.getElementById('incDays').onclick = () => days.value = Math.max(1, (+days.value||1)+1);
+    document.getElementById('decDays').onclick = () => days.value = Math.max(1, (+days.value||1)-1);
+
+    // ปรับสไตล์แถวเวลาเมื่อ app.js สร้าง input เวลาใหม่ (ใช้ MutationObserver ดู children ของ #timesWrap)
+    const timesWrap = document.getElementById('timesWrap');
+    const decorateTimeRows = () => {
+      timesWrap.querySelectorAll('div[data-row!="1"]').forEach(d => d.setAttribute('data-row','1'));
+      timesWrap.querySelectorAll('input[type="datetime-local"]').forEach(el=>{
+        el.classList.add("border","rounded-xl","px-3","py-2.5","w-full","focus:outline-none","focus:ring-2","focus:ring-emerald-500");
+      });
+      // ปุ่มลบที่ app.js สร้าง (ข้อความ "ลบ") ให้ดูเป็นชิป
+      timesWrap.querySelectorAll('button').forEach(btn=>{
+        if (!btn.dataset.styled) {
+          btn.className = "text-sm text-rose-600 hover:text-rose-700 underline ml-2";
+          btn.dataset.styled = "1";
+        }
+      });
+      // ห่อให้สวย
+      timesWrap.querySelectorAll('div').forEach(w=>{
+        w.classList.add("flex","items-center","gap-2");
+      });
+    };
+    new MutationObserver(decorateTimeRows).observe(timesWrap,{childList:true,subtree:true});
+    window.addEventListener('DOMContentLoaded', decorateTimeRows);
+
+    // Toast ช่วยแจ้งสถานะ (คุณสามารถแก้ app.js ให้เรียก showToast แทนการเขียน saveMsg ก็ได้)
+    window.showToast = (text, color="emerald")=>{
+      const t = document.getElementById('toast');
+      t.textContent = text;
+      t.className = `fixed left-1/2 -translate-x-1/2 bottom-6 px-4 py-2 rounded-lg shadow-lg text-sm text-white bg-${color}-600`;
+      t.style.display = 'block';
+      setTimeout(()=> t.style.display='none', 2200);
+    };
+
+    // ปุ่มโหลด: ผูกกับการ submit ของฟอร์ม (ไม่ไปยุ่ง logic ที่ app.js)
+    const form = document.getElementById('medForm');
+    const loadingDot = document.getElementById('loadingDot');
+    const submitBtn  = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', ()=>{
+      loadingDot.classList.remove('hidden');
+      submitBtn.setAttribute('disabled','true');
+      setTimeout(()=>{ // กันลืมปลด (เผื่อ app.js ไม่คืนสถานะ)
+        loadingDot.classList.add('hidden');
+        submitBtn.removeAttribute('disabled');
+      }, 6000);
+    });
+
+    // ให้ app.js ใช้งานได้: ถ้าตั้งค่าข้อความสำเร็จ/ล้มเหลวเดิม ให้เราช่วยโชว์ toast ด้วย
+    const saveMsg = document.getElementById('saveMsg');
+    const msgObserver = new MutationObserver(()=>{
+      const txt = (saveMsg.textContent || "").trim();
+      if (!txt) return;
+      if (txt.startsWith("✅")) showToast(txt, "emerald");
+      else if (txt.startsWith("❌")) showToast(txt, "rose");
+      else showToast(txt, "indigo");
+    });
+    msgObserver.observe(saveMsg,{childList:true,characterData:true,subtree:true});
+  </script>
+
+  <!-- ไฟล์ logic เดิมของคุณ -->
+  <script defer src="/app.js"></script>
 </body>
 </html>
